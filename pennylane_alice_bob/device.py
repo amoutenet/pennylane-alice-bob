@@ -9,18 +9,22 @@ from pennylane import DeviceError
 from qiskit_alice_bob_provider.local.provider import AliceBobLocalProvider
 from qiskit_alice_bob_provider import AliceBobRemoteProvider
 
-class AliceBobQubitDevice(qml.Device):
+class AliceBobQubitDevice(qml.devices.Device):
     """
     Alice & Bob's custom device for PennyLane.
     
     This device allows for the simulation of quantum circuits using Alice & Bob's custom backends.
     """
 
-    name = "Alice & Bob's custom PennyLane plugin"
-    short_name = "alicebob.qubit"
-    pennylane_requires = ">=0.28.0"
-    version = "0.0.1"
-    author = "QuantumETS"
+    @property
+    def name(self):
+        """The name of the device."""
+        return "alicebob.qubit"
+    # name = "Alice & Bob's custom PennyLane plugin"
+    # short_name = "alicebob.qubit"
+    # pennylane_requires = ">=0.28.0"
+    # version = "0.0.1"
+    # author = "QuantumETS"
 
     @staticmethod
     def configured_backend(backend, api_key='', **kwargs):
@@ -46,7 +50,7 @@ class AliceBobQubitDevice(qml.Device):
         warnings.warn(f"Backend '{backend}' not found. Using default local backend.")
         return AliceBobLocalProvider().get_backend('default', **kwargs)
 
-    def __new__(cls, wires=1, shots=1024, seed="global", max_workers=None, alice_backend="EMU:6Q:PHYSICAL_CATS", api_token="", **kwargs):
+    def __new__(self, wires=1, shots=1024, seed="global", max_workers=None, alice_backend="EMU:6Q:PHYSICAL_CATS", api_token="", **kwargs):
         """
         Creates a new instance or reuses an existing instance of the AliceBobQubitDevice.
 
@@ -61,7 +65,7 @@ class AliceBobQubitDevice(qml.Device):
         Returns:
         - An instance of qml.Device configured with the specified backend.
         """
-        provider = cls.configured_backend(alice_backend, api_token, **kwargs)
+        provider = self.configured_backend(alice_backend, api_token, **kwargs)
 
         class Stub:
             n_qubits = wires
